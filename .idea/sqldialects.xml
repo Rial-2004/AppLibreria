@@ -2,5 +2,6 @@
 <project version="4">
   <component name="SqlDialectMappings">
     <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/394d0f17-9735-4183-825a-cd950dc4ee99/console.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/src/dao/libroDAO.java" dialect="MySQL" />
   </component>
 </project>
