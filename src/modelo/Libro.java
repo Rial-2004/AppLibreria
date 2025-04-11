@@ -1,6 +1,6 @@
 package modelo;
 
-public class libro {
+public class Libro {
     private String titulo;
     private String autor;
     private String genero;
@@ -9,7 +9,7 @@ public class libro {
     private int anio;
     private boolean disponible;
 
-    public libro(String titulo, String autor, String genero, String isbn,int paginas, int anio, boolean disponible) {
+    public Libro(String titulo, String autor, String genero, String isbn, int paginas, int anio, boolean disponible) {
         this.titulo = titulo;
         this.autor = autor;
         this.genero = genero;

@@ -1,7 +1,4 @@
 import dao.libroDAO;
-import modelo.libro;
-
-import java.sql.SQLException;
 
 
 public class main {

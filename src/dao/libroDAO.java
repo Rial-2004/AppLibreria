@@ -1,16 +1,17 @@
 package dao;
 
-import modelo.libro;
+import modelo.Libro;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class libroDAO {
-    public void insertLibro(libro libro) throws SQLException {
+
+    public void insertLibro(Libro libro) throws SQLException {
 
         Connection con = conexionDB.getConexion();
-        if(!buscaPorIsbn(libro.getIsbn()).equals("")){
+        if(!buscaPorIsbn(libro.getIsbn()).isEmpty()){
             String consulta = "insert into libros (titulo,autor,genero,isbn,paginas,anio,disponible) values(?,?,?,?,?,?,?)";
 
             try(PreparedStatement ps = con.prepareStatement(consulta)) {
@@ -31,17 +32,19 @@ public class libroDAO {
         }
 
     }
+
     public List<String> listarTodos() throws SQLException {
         List<String> lista = new ArrayList<>();
         Connection con = conexionDB.getConexion();
         Statement st = con.createStatement();
         ResultSet rs = st.executeQuery("select * from libros");
         while (rs.next()) {
-            libro l = convertirObjeto(rs);
+            Libro l = convertirObjeto(rs);
             lista.add("Id: "+rs.getInt("id")+" "+l);
         }
         return lista;
     }
+
     public void eliminarLibro(int id) throws SQLException {
         Connection con = conexionDB.getConexion();
         String consulta = "delete from libros where id = ?";
@@ -53,36 +56,28 @@ public class libroDAO {
             throw new SQLException("Error al eliminar libro");
         }
     }
-    public List<libro> buscarPorTitulo(String tituloLibro) throws SQLException {
-        List<libro> lista = new ArrayList<>();
+
+    public List<Libro> buscarPorTitulo(String tituloLibro) throws SQLException {
+        List<Libro> lista = new ArrayList<>();
         Connection con = conexionDB.getConexion();
         String consulta = "select * from libros where titulo = ?";
-        try(PreparedStatement ps = con.prepareStatement(consulta)) {
-            ps.setString(1, tituloLibro);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                while (rs.next()) {
-                    libro l = convertirObjeto(rs);
-                }
-                return lista;
-            }
-            return lista;
-        }catch(SQLException e) {
-            throw new SQLException("Error al buscar libros en la base de datos");
-        }
+        return obtenerResultado(consulta,tituloLibro,con);
     }
-    public List<libro> buscaPorGenero(String generoLibro) throws SQLException {
-        List<libro> lista = new ArrayList<>();
+
+    public List<Libro> buscaPorGenero(String generoLibro) throws SQLException {
+        List<Libro> lista = new ArrayList<>();
         Connection con = conexionDB.getConexion();
         String consulta = "select * from libros where genero = ?";
         return obtenerResultado(consulta,generoLibro ,con);
     }
-    public List<libro> buscaPorAnio(String anioLibro) throws SQLException {
-        List<libro> lista = new ArrayList<>();
+
+    public List<Libro> buscaPorAnio(String anioLibro) throws SQLException {
+        List<Libro> lista = new ArrayList<>();
         Connection con = conexionDB.getConexion();
         String consulta = "select * from libros where anio = ?";
         return obtenerResultado(consulta,anioLibro ,con);
     }
+
     public String buscaPorIsbn(String isbn) throws SQLException {
         Connection con = conexionDB.getConexion();
         String consulta = "select * from libros where isbn = ?";
@@ -91,7 +86,7 @@ public class libroDAO {
             ResultSet rs = ps.executeQuery();
 
             if(rs.next()) {
-                libro l = new libro(
+                Libro l = new Libro(
                         rs.getString("titulo"),
                         rs.getString("autor"),
                         rs.getString("genero"),
@@ -105,33 +100,36 @@ public class libroDAO {
             return "";
         }
     }
-    public List<libro> librosDisponible() throws SQLException {
-        List<libro> lista = new ArrayList<>();
+
+    public List<Libro> librosDisponible() throws SQLException {
+        List<Libro> lista = new ArrayList<>();
         Connection con = conexionDB.getConexion();
         Statement st = con.createStatement();
         ResultSet rs = st.executeQuery("select * from libros where disponible = true");
         while (rs.next()) {
-            libro l = convertirObjeto(rs);
+            Libro l = convertirObjeto(rs);
             lista.add(l);
         }
         return lista;
     }
-    public List<libro> obtenerResultado(String consulta, String x, Connection con) throws SQLException {
-        List<libro> lista = new ArrayList<>();
-        try(PreparedStatement ps = con.prepareStatement(consulta)) {
-            ps.setString(1, x);
+
+    public List<Libro> obtenerResultado(String sqlConsulta, String parametro, Connection conexion) throws SQLException {
+        List<Libro> lista = new ArrayList<>();
+        try(PreparedStatement ps = conexion.prepareStatement(sqlConsulta)) {
+            ps.setString(1, parametro);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                libro l = convertirObjeto(rs);
+                Libro l = convertirObjeto(rs);
                 lista.add(l);
             }
             return lista;
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             throw new SQLException("Error en la consulta");
         }
     }
-    public libro convertirObjeto(ResultSet rs) throws SQLException {
-        return new libro(
+
+    public Libro convertirObjeto(ResultSet rs) throws SQLException {
+        return new Libro(
                 rs.getString("titulo"),
                 rs.getString("autor"),
                 rs.getString("genero"),
@@ -141,6 +139,7 @@ public class libroDAO {
                 rs.getBoolean("disponible")
         );
     }
+
     public void cambiarDisponibilidad(int id, boolean x) throws SQLException {
         Connection con = conexionDB.getConexion();
         String consulta = "update libros set disponible = ? where id = ?";
